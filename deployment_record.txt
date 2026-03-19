@@ -1,0 +1,77 @@
+# Website Deployment Record
+# Date: December 17, 2025
+# Domain: naylinnaung.io
+
+## 1. Project Information
+- **Google Cloud Project ID**: naylinnaung
+- **Platform**: Google App Engine (Standard Environment)
+- **Runtime**: python311 (Static Site Hosting)
+- **Repo/Folder**: c:\Users\user\Downloads\Alam\nay_linn_aung_profile
+
+## 2. Domain Configuration
+- **Registrar**: Google Cloud Domains (SquareSpace backend)
+- **DNS Provider**: Google Cloud DNS
+- **Zone Name**: naylinnaung-io
+- **Nameservers**:
+  - ns-cloud-b1.googledomains.com
+  - ns-cloud-b2.googledomains.com
+  - ns-cloud-b3.googledomains.com
+  - ns-cloud-b4.googledomains.com
+
+## 3. DNS Records (Manually Configured)
+These records connect the domain to the Google App Engine application.
+
+### A Records (IPv4)
+- 216.239.32.21
+- 216.239.34.21
+- 216.239.36.21
+- 216.239.38.21
+
+### AAAA Records (IPv6)
+- 2001:4860:4802:32::15
+- 2001:4860:4802:34::15
+- 2001:4860:4802:36::15
+- 2001:4860:4802:38::15
+
+### CNAME Record (for www)
+- **Name**: www
+- **Value**: ghs.googlehosted.com.
+
+## 4. App Engine Configuration (app.yaml)
+```yaml
+runtime: python311
+entrypoint: echo "Serving static files for naylinnaung.io"
+
+handlers:
+# 1. Root URL -> index.html
+- url: /
+  static_files: index.html
+  upload: index.html
+
+# 2. Static Directories (CSS, JS, Assets)
+- url: /css
+  static_dir: css
+- url: /js
+  static_dir: js
+- url: /assets
+  static_dir: assets
+
+# 3. Direct HTML file serving
+- url: /(.*\.html)
+  static_files: \1
+  upload: .*\.html
+
+# 4. Clean URLs
+- url: /(.*)
+  static_files: \1.html
+  upload: .*\.html
+```
+
+## 5. Deployment Commands
+To update the website in the future:
+
+1. Open Terminal in project folder:
+   `cd c:\Users\user\Downloads\Alam\nay_linn_aung_profile`
+
+2. Run Deployment:
+   `gcloud app deploy --project=naylinnaung`

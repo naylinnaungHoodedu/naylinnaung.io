@@ -1,0 +1,43 @@
+runtime: python311
+entrypoint: echo "Serving static files for naylinnaung.io"
+default_expiration: "0s"
+
+handlers:
+# 1. Root URL -> index.html
+- url: /
+  static_files: index.html
+  upload: index.html
+
+# 2. SEO & Crawling files
+- url: /robots.txt
+  static_files: robots.txt
+  upload: robots.txt
+
+- url: /sitemap.xml
+  static_files: sitemap.xml
+  upload: sitemap.xml
+
+# 3. Custom 404 page
+- url: /404.html
+  static_files: 404.html
+  upload: 404.html
+
+# 4. Static Directories (CSS, JS, Assets)
+- url: /css
+  static_dir: css
+
+- url: /js
+  static_dir: js
+
+- url: /assets
+  static_dir: assets
+
+# 5. Direct HTML file serving (e.g. /about.html -> serves about.html)
+- url: /(.*\.html)
+  static_files: \1
+  upload: (.*\.html)
+
+# 6. Clean URLs (e.g. /about -> serves about.html)
+- url: /(.*)
+  static_files: \1.html
+  upload: .*\.html

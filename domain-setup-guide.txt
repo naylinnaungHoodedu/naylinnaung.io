@@ -1,0 +1,337 @@
+================================================================================
+        GUIDE: POINTING naylinnaung.io TO GOOGLE CLOUD APP
+================================================================================
+
+This guide walks you through purchasing and connecting your domain (naylinnaung.io)
+to your Google Cloud application using Google Cloud Domains.
+
+================================================================================
+                    PART A: PURCHASING THE DOMAIN
+================================================================================
+
+--------------------------------------------------------------------------------
+STEP 0: PURCHASE DOMAIN VIA GOOGLE CLOUD DOMAINS
+--------------------------------------------------------------------------------
+
+Google Cloud has a built-in domain registration service called "Cloud Domains".
+This is the easiest way to purchase and manage domains within GCP.
+
+1. Open Google Cloud Console:
+   https://console.cloud.google.com
+
+2. Navigate to Cloud Domains:
+   - Use the search bar and type "Cloud Domains"
+   - Or go to: Network Services > Cloud Domains
+   - Direct URL: https://console.cloud.google.com/net-services/domains
+
+3. Click "Register Domain"
+
+4. Search for your domain:
+   - Enter: naylinnaung.io
+   - Click "Search"
+
+5. If available, click "Add to Cart" (or "Select")
+
+6. Configure registration settings:
+   - Registration period: 1 year (or more)
+   - Auto-renew: Recommended ON
+   - Privacy protection: Recommended ON (hides WHOIS info)
+
+7. Fill in contact information:
+   - Registrant contact details (your name, address, email)
+   - This is required by ICANN
+
+8. Choose DNS settings:
+   - Option 1: "Use Google Domains name servers" (Recommended)
+   - Option 2: "Use Cloud DNS" (if you need advanced DNS features)
+   - Option 3: "Use custom name servers" (for external DNS)
+
+9. Review and complete purchase:
+   - Verify all details
+   - Accept terms of service
+   - Click "Register" or "Complete Purchase"
+   - Payment will be charged to your GCP billing account
+
+PRICING (approximate for .io domains):
+   - Registration: ~$20-40/year
+   - Charged to your Google Cloud billing account
+
+AFTER PURCHASE:
+   - Domain is immediately available in Cloud Domains
+   - DNS is auto-configured if you chose Google name servers
+   - You can manage it at: Cloud Domains > Your domain
+
+================================================================================
+                    PART B: CONNECTING DOMAIN TO YOUR APP
+================================================================================
+
+--------------------------------------------------------------------------------
+STEP 1: IDENTIFY YOUR GOOGLE CLOUD SERVICE TYPE
+--------------------------------------------------------------------------------
+
+First, determine which Google Cloud service hosts your app:
+
+  [ ] Google App Engine (GAE)
+  [ ] Google Cloud Run
+  [ ] Google Compute Engine (VM with static IP)
+  [ ] Firebase Hosting
+  [ ] Google Cloud Storage (static website)
+
+The setup varies slightly depending on your service.
+
+--------------------------------------------------------------------------------
+STEP 2: GET YOUR GOOGLE CLOUD APP DETAILS
+--------------------------------------------------------------------------------
+
+A) FOR APP ENGINE:
+   - Your default URL: https://[PROJECT-ID].appspot.com
+   - Go to: Google Cloud Console > App Engine > Settings > Custom Domains
+
+B) FOR CLOUD RUN:
+   - Your default URL: https://[SERVICE-NAME]-[HASH]-[REGION].a.run.app
+   - Go to: Google Cloud Console > Cloud Run > Manage Custom Domains
+
+C) FOR COMPUTE ENGINE (VM):
+   - Reserve a static external IP address
+   - Go to: VPC Network > External IP addresses > Reserve Static Address
+   - Note down your static IP (e.g., 35.xxx.xxx.xxx)
+
+--------------------------------------------------------------------------------
+STEP 3: CONFIGURE GOOGLE CLOUD FOR CUSTOM DOMAIN
+--------------------------------------------------------------------------------
+
+=== FOR APP ENGINE ===
+
+1. Open Google Cloud Console: https://console.cloud.google.com
+2. Navigate to: App Engine > Settings > Custom Domains
+3. Click "Add a custom domain"
+4. Enter: naylinnaung.io
+5. Google will provide DNS records you need to add (see Step 4)
+6. Google will also provide an SSL certificate automatically
+
+=== FOR CLOUD RUN ===
+
+1. Open Google Cloud Console
+2. Navigate to: Cloud Run > Your Service > Manage Custom Domains
+3. Click "Add Mapping"
+4. Select your service and enter: naylinnaung.io
+5. Choose "Cloud Run domain mapping"
+6. Note the DNS records provided
+
+=== FOR COMPUTE ENGINE ===
+
+1. Ensure you have a static IP reserved
+2. Set up a load balancer (recommended) or use IP directly
+3. For Load Balancer with SSL:
+   - Go to: Network Services > Load Balancing
+   - Create HTTP(S) Load Balancer
+   - Add SSL certificate for naylinnaung.io
+
+--------------------------------------------------------------------------------
+STEP 4: CONFIGURE DNS AT YOUR DOMAIN REGISTRAR
+--------------------------------------------------------------------------------
+
+Log in to your domain registrar where you purchased naylinnaung.io
+(e.g., Namecheap, GoDaddy, Google Domains, Cloudflare, etc.)
+
+Navigate to: DNS Settings / DNS Management / Nameservers
+
+=== OPTION A: FOR APP ENGINE / CLOUD RUN (CNAME Method) ===
+
+Add the following DNS records:
+
++--------+------------------+----------------------------------+-------+
+| Type   | Host/Name        | Value/Points To                  | TTL   |
++--------+------------------+----------------------------------+-------+
+| A      | @                | 216.239.32.21                    | 3600  |
+| A      | @                | 216.239.34.21                    | 3600  |
+| A      | @                | 216.239.36.21                    | 3600  |
+| A      | @                | 216.239.38.21                    | 3600  |
+| CNAME  | www              | ghs.googlehosted.com             | 3600  |
++--------+------------------+----------------------------------+-------+
+
+Note: The A records above are Google's standard IPs for App Engine.
+      Use the exact records provided by Google Cloud Console for accuracy.
+
+=== OPTION B: FOR COMPUTE ENGINE (Static IP Method) ===
+
++--------+------------------+----------------------------------+-------+
+| Type   | Host/Name        | Value/Points To                  | TTL   |
++--------+------------------+----------------------------------+-------+
+| A      | @                | [YOUR-STATIC-IP]                 | 3600  |
+| A      | www              | [YOUR-STATIC-IP]                 | 3600  |
++--------+------------------+----------------------------------+-------+
+
+Replace [YOUR-STATIC-IP] with your actual reserved IP (e.g., 35.123.45.67)
+
+=== OPTION C: USING GOOGLE CLOUD DNS (Recommended for Full Control) ===
+
+1. Go to: Cloud Console > Network Services > Cloud DNS
+2. Create a DNS zone for naylinnaung.io
+3. Add the required A/CNAME records
+4. Update nameservers at your registrar to Google's:
+   - ns-cloud-a1.googledomains.com
+   - ns-cloud-a2.googledomains.com
+   - ns-cloud-a3.googledomains.com
+   - ns-cloud-a4.googledomains.com
+
+--------------------------------------------------------------------------------
+STEP 5: VERIFY DOMAIN OWNERSHIP (If Required)
+--------------------------------------------------------------------------------
+
+Google may require domain verification. Common methods:
+
+METHOD 1: TXT Record (Recommended)
+   - Add a TXT record with the verification string Google provides
+   - Type: TXT
+   - Host: @
+   - Value: google-site-verification=XXXXXXXXXXXXXX
+
+METHOD 2: CNAME Record
+   - Add the CNAME record Google provides for verification
+
+METHOD 3: HTML File
+   - Upload a verification HTML file to your site root
+
+--------------------------------------------------------------------------------
+STEP 6: SET UP SSL/HTTPS (Important!)
+--------------------------------------------------------------------------------
+
+=== FOR APP ENGINE / CLOUD RUN ===
+   - Google provides FREE managed SSL certificates automatically
+   - After DNS propagation, HTTPS will work within 24 hours
+
+=== FOR COMPUTE ENGINE ===
+   - Use Google-managed certificates with Load Balancer
+   - Or use Let's Encrypt (Certbot) on your VM:
+   
+     sudo apt install certbot python3-certbot-nginx
+     sudo certbot --nginx -d naylinnaung.io -d www.naylinnaung.io
+
+--------------------------------------------------------------------------------
+STEP 7: WAIT FOR DNS PROPAGATION
+--------------------------------------------------------------------------------
+
+DNS changes can take time to propagate globally:
+
+  - Minimum: 5-15 minutes
+  - Typical: 1-4 hours  
+  - Maximum: 24-48 hours
+
+You can check propagation status at:
+  - https://dnschecker.org
+  - https://www.whatsmydns.net
+
+Search for: naylinnaung.io
+
+--------------------------------------------------------------------------------
+STEP 8: VERIFY YOUR SETUP
+--------------------------------------------------------------------------------
+
+After propagation, test your domain:
+
+1. Open browser and visit:
+   - http://naylinnaung.io
+   - https://naylinnaung.io
+   - http://www.naylinnaung.io
+   - https://www.naylinnaung.io
+
+2. Verify SSL certificate:
+   - Click the padlock icon in browser
+   - Certificate should show issued for naylinnaung.io
+
+3. Use command line to verify DNS:
+   
+   Windows PowerShell:
+   > nslookup naylinnaung.io
+   
+   Expected output should show Google's IP addresses
+
+--------------------------------------------------------------------------------
+STEP 9: CONFIGURE REDIRECTS (Best Practice)
+--------------------------------------------------------------------------------
+
+Set up redirects so all traffic goes to one canonical URL:
+
+Recommended: Redirect all to https://naylinnaung.io
+
+In App Engine (app.yaml):
+----------------------------------------
+handlers:
+- url: /.*
+  secure: always
+  redirect_http_response_code: 301
+----------------------------------------
+
+Or in your web server (nginx.conf):
+----------------------------------------
+server {
+    listen 80;
+    server_name naylinnaung.io www.naylinnaung.io;
+    return 301 https://naylinnaung.io$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name www.naylinnaung.io;
+    return 301 https://naylinnaung.io$request_uri;
+}
+----------------------------------------
+
+--------------------------------------------------------------------------------
+TROUBLESHOOTING
+--------------------------------------------------------------------------------
+
+ISSUE: Domain not resolving
+  - Wait for DNS propagation (up to 48 hours)
+  - Verify DNS records are correct at registrar
+  - Clear browser cache and DNS cache:
+    Windows: ipconfig /flushdns
+    
+ISSUE: SSL certificate not working
+  - Ensure DNS is fully propagated first
+  - Check Google Cloud Console for certificate status
+  - For App Engine: Can take up to 24 hours after DNS propagation
+
+ISSUE: "This site can't be reached"
+  - Verify your Google Cloud app is running
+  - Check firewall rules allow HTTP/HTTPS traffic
+  - Verify custom domain mapping in Google Cloud Console
+
+ISSUE: Shows wrong website
+  - DNS cache issue - wait or flush DNS
+  - Verify A record points to correct IP
+
+--------------------------------------------------------------------------------
+QUICK REFERENCE SUMMARY
+--------------------------------------------------------------------------------
+
+Your Domain:        naylinnaung.io
+DNS Records Needed: A records (for root) + CNAME (for www)
+SSL:                Free via Google-managed certificates
+Propagation Time:   1-48 hours
+Verification:       Via TXT record or HTML file
+
+Google Cloud Console: https://console.cloud.google.com
+DNS Checker:          https://dnschecker.org
+
+--------------------------------------------------------------------------------
+SUPPORT RESOURCES
+--------------------------------------------------------------------------------
+
+- Google Cloud Custom Domains Documentation:
+  https://cloud.google.com/appengine/docs/standard/mapping-custom-domains
+
+- Google Cloud Run Custom Domains:
+  https://cloud.google.com/run/docs/mapping-custom-domains
+
+- Google Cloud DNS:
+  https://cloud.google.com/dns/docs
+
+- Stack Overflow:
+  https://stackoverflow.com/questions/tagged/google-cloud-platform
+
+================================================================================
+                    Document Created: December 17, 2025
+                    For: Nay Linn Aung (naylinnaung.io)
+================================================================================
