@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Deep technical guide to LLM concepts applied to Industrial Automation, Robotics, SCADA, IIoT and PLC systems by Nay Linn Aung.">
+  <title>LLM Concepts for Industrial Automation and Robotics | Nay Linn Aung</title>
+
+  <!-- Plotly for interactive charts -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <!-- MathJax for equations -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <!-- Highlight.js for code blocks -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <style>
+    /* ─── Base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b22;
+      --border:   #30363d;
+      --blue:     #58a6ff;
+      --green:    #3fb950;
+      --orange:   #d29922;
+      --red:      #f85149;
+      --purple:   #bc8cff;
+      --text:     #e6edf3;
+      --muted:    #8b949e;
+      --radius:   10px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ─── Navigation Sidebar ───────────────────────────────── */
+    nav.sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 240px; height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    nav.sidebar h2 { color: var(--blue); font-size: .85rem; text-transform: uppercase;
+                     letter-spacing: 1px; margin-bottom: 16px; }
+    nav.sidebar a {
+      display: block; padding: 8px 12px; color: var(--muted);
+      text-decoration: none; border-radius: 6px; font-size: .9rem;
+      margin-bottom: 4px; transition: all .2s;
+    }
+    nav.sidebar a:hover, nav.sidebar a.active { background: #1f2937; color: var(--blue); }
+    nav.sidebar .badge {
+      float: right; background: var(--border); color: var(--muted);
+      font-size: .7rem; padding: 2px 6px; border-radius: 10px;
+    }
+
+    /* ─── Main Content ─────────────────────────────────────── */
+    main { margin-left: 240px; padding: 40px 48px; max-width: 1100px; }
+
+    /* ─── Hero ─────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 50%, #0d1117 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px 40px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: ""; position: absolute; top: -50%; right: -10%;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(88,166,255,0.08) 0%, transparent 70%);
+    }
+    .hero h1 { font-size: 2.2rem; color: var(--blue); margin-bottom: 12px; }
+    .hero p  { color: var(--muted); max-width: 680px; font-size: 1.05rem; }
+    .hero .tags { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .tag {
+      padding: 4px 14px; border-radius: 20px; font-size: .8rem; font-weight: 600;
+      border: 1px solid;
+    }
+    .tag-blue   { color: var(--blue);   border-color: var(--blue);   background: rgba(88,166,255,.1); }
+    .tag-green  { color: var(--green);  border-color: var(--green);  background: rgba(63,185,80,.1); }
+    .tag-orange { color: var(--orange); border-color: var(--orange); background: rgba(210,153,34,.1); }
+    .tag-purple { color: var(--purple); border-color: var(--purple); background: rgba(188,140,255,.1); }
+
+    /* ─── Market Stats Banner ──────────────────────────────── */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 24px; text-align: center;
+    }
+    .stat-card .number { font-size: 2rem; font-weight: 700; color: var(--blue); }
+    .stat-card .label  { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+    /* ─── Section Headers ──────────────────────────────────── */
+    .section { margin-bottom: 56px; }
+    .section-header {
+      display: flex; align-items: center; gap: 14px;
+      border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px;
+    }
+    .section-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; flex-shrink: 0;
+    }
+    .icon-blue   { background: rgba(88,166,255,.15); }
+    .icon-green  { background: rgba(63,185,80,.15); }
+    .icon-orange { background: rgba(210,153,34,.15); }
+    .icon-purple { background: rgba(188,140,255,.15); }
+    .icon-red    { background: rgba(248,81,73,.15); }
+    .section-header h2 { font-size: 1.4rem; color: var(--text); }
+    .section-header .concept-tag { font-size: .8rem; color: var(--muted); margin-left: auto;
+                                    background: var(--border); padding: 4px 10px; border-radius: 6px; }
+
+    /* ─── Cards ────────────────────────────────────────────── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
+    }
+    .card h3 { color: var(--blue); margin-bottom: 10px; font-size: 1.05rem; }
+    .card p, .card li { color: var(--muted); font-size: .95rem; }
+    .card ul { padding-left: 20px; margin-top: 8px; }
+    .card li { margin-bottom: 6px; }
+
+    /* ─── Two-column grid ──────────────────────────────────── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+
+    /* ─── Use Case Banner ──────────────────────────────────── */
+    .use-case-banner {
+      background: linear-gradient(90deg, rgba(63,185,80,.08), rgba(88,166,255,.08));
+      border: 1px solid var(--green); border-radius: var(--radius);
+      padding: 16px 20px; margin: 20px 0;
+      display: flex; align-items: flex-start; gap: 14px;
+    }
+    .use-case-banner .icon { font-size: 1.6rem; margin-top: 2px; flex-shrink: 0; }
+    .use-case-banner strong { color: var(--green); display: block; margin-bottom: 4px; }
+    .use-case-banner p { color: var(--muted); font-size: .9rem; }
+
+    /* ─── Math Box ─────────────────────────────────────────── */
+    .math-box {
+      background: #0a0e13; border: 1px solid var(--border); border-left: 3px solid var(--purple);
+      border-radius: var(--radius); padding: 18px 22px; margin: 16px 0;
+      font-size: .95rem; color: var(--muted);
+    }
+    .math-box .label { color: var(--purple); font-size: .8rem; font-weight: 700;
+                        text-transform: uppercase; margin-bottom: 8px; }
+
+    /* ─── Code Block ───────────────────────────────────────── */
+    .code-block { border-radius: var(--radius); overflow: hidden; margin: 16px 0; }
+    .code-header {
+      background: #1c2128; border: 1px solid var(--border); border-bottom: none;
+      padding: 8px 16px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .code-header span { color: var(--muted); font-size: .8rem; }
+    .copy-btn {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: .75rem;
+      transition: all .2s;
+    }
+    .copy-btn:hover { background: var(--border); color: var(--text); }
+    pre { margin: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+    pre code { font-size: .85rem !important; }
+
+    /* ─── Interactive Demo ─────────────────────────────────── */
+    .demo-panel {
+      background: var(--surface); border: 1px solid var(--blue);
+      border-radius: var(--radius); padding: 24px; margin: 20px 0;
+    }
+    .demo-panel h3 { color: var(--blue); margin-bottom: 16px; font-size: 1rem; }
+    .demo-input {
+      width: 100%; padding: 10px 14px; background: var(--bg);
+      border: 1px solid var(--border); color: var(--text);
+      border-radius: 6px; font-size: .95rem; margin-bottom: 12px;
+    }
+    .demo-input:focus { outline: none; border-color: var(--blue); }
+    .demo-btn {
+      padding: 9px 22px; background: var(--blue); color: #000;
+      border: none; border-radius: 6px; cursor: pointer; font-weight: 600;
+      font-size: .9rem; transition: opacity .2s;
+    }
+    .demo-btn:hover { opacity: .85; }
+    .demo-output {
+      margin-top: 16px; padding: 14px; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 6px;
+      font-size: .9rem; color: var(--muted); min-height: 60px;
+      display: none;
+    }
+
+    /* ─── Progress / Pipeline ──────────────────────────────── */
+    .pipeline {
+      display: flex; align-items: center; gap: 0; margin: 20px 0;
+      overflow-x: auto; padding-bottom: 8px;
+    }
+    .pipe-step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 16px; text-align: center;
+      min-width: 120px; flex-shrink: 0;
+    }
+    .pipe-step .pipe-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+    .pipe-step .pipe-label { font-size: .78rem; color: var(--muted); }
+    .pipe-arrow { color: var(--blue); font-size: 1.4rem; padding: 0 6px; flex-shrink: 0; }
+
+    /* ─── Attention Matrix ─────────────────────────────────── */
+    #attention-matrix { width: 100%; height: 320px; }
+
+    /* ─── Responsive ───────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav.sidebar { display: none; }
+      main { margin-left: 0; padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr; }
+    }
+
+    /* ─── Footer ───────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border); padding: 30px 0;
+      text-align: center; color: var(--muted); font-size: .85rem; margin-top: 60px;
+    }
+    footer a { color: var(--blue); text-decoration: none; }
+  </style>
+</head>
+
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     SIDEBAR NAVIGATION
+═══════════════════════════════════════════════ -->
+<nav class="sidebar">
+  <h2>📖 Contents</h2>
+  <a href="#intro"         class="active">🏠 Introduction</a>
+  <a href="#tokenization"            >🔤 Tokenization</a>
+  <a href="#transformers"            >⚙️ Transformers</a>
+  <a href="#attention"               >🔍 Self-Attention</a>
+  <a href="#pretraining"             >🧠 Pretraining</a>
+  <a href="#finetuning"              >🎯 Fine-Tuning</a>
+  <a href="#rag"                     >📚 RAG</a>
+  <a href="#agentic"                 >🤖 Agentic AI</a>
+  <a href="#industrial-apps"         >🏭 Industrial Apps</a>
+  <a href="#deployment"              >🚀 Deployment</a>
+  <hr style="border-color:var(--border); margin:16px 0;">
+  <a href="index.html">← Back to Portfolio</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════ -->
+<main>
+
+  <!-- ── Hero ─────────────────────────────────────── -->
+  <section id="intro">
+    <div class="hero">
+      <h1>🤖 LLM Concepts for Industrial<br>Automation and Robotics</h1>
+      <p>A deep technical guide to Large Language Models — architecture, training, deployment, and real-world applications in SCADA, PLC, IIoT, collaborative robotics, and autonomous control systems.</p>
+      <div class="tags">
+        <span class="tag tag-blue">Transformer Architecture</span>
+        <span class="tag tag-green">Industrial IIoT</span>
+        <span class="tag tag-orange">SCADA / PLC / HMI</span>
+        <span class="tag tag-purple">Collaborative Robotics</span>
+        <span class="tag tag-blue">RAG & Agentic AI</span>
+      </div>
+    </div>
+
+    <!-- Market Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="number">$6.1B</div>
+        <div class="label">LLM in Robotics Market 2026</div>
+      </div>
+      <div class="stat-card">
+        <div class="number">41.3%</div>
+        <div class="label">CAGR through 2030</div>
+      </div>
+      <div class="stat-card">
+        <div class="number">35%</div>
+        <div class="label">Smart Factory LLM Adoption (2026 vs 16% in 2025)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 1 — TOKENIZATION & EMBEDDINGS
+  ═══════════════════════════════════════════ -->
+  <section id="tokenization" class="section">
+    <div class="section-header">
+      <div class="section-icon icon-blue">🔤</div>
+      <div>
+        <h2>Tokenization &amp; Embeddings</h2>
+        <p style="color:var(--muted); font-size:.85rem;">How LLMs read industrial text data</p>
+      </div>
+      <span class="concept-tag">Concept 01</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>What is Tokenization?</h3>
+        <p>Tokenization splits raw text into subword units called <strong style="color:var(--blue)">tokens</strong>. LLMs like GPT-4 use Byte Pair Encoding (BPE) — a vocabulary of ~50,000 subwords. For industrial text:</p>
+        <ul>
+          <li><code>FAULT_JOINT_3</code> → <code>[FAULT] [_JOINT] [_3]</code></li>
+          <li><code>E-STOP TRIGGERED</code> → <code>[E] [-] [STOP] [TRIG] [GERED]</code></li>
+          <li><code>PLC_ALARM_072</code> → <code>[PLC] [_ALARM] [_07] [2]</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Embeddings in Industrial Context</h3>
+        <p>Each token is mapped to a high-dimensional vector (e.g., 768D or 4096D). Semantically similar SCADA alarms cluster together in embedding space:</p>
+        <ul>
+          <li>"Motor Overheat" ≈ "Thermal Runaway" (nearby vectors)</li>
+          <li>"E-Stop" ≠ "Speed Limit" (distant vectors)</li>
+          <li>Used for semantic search over maintenance logs</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="math-box">
+      <div class="label">Mathematical Definition</div>
+      <p>For vocabulary \(V\), each token \(t_i \in V\) is mapped by embedding matrix \(W_E \in \mathbb{R}^{|V| \times d}\):</p>
+      <p style="margin-top:10px; text-align:center;">\[ \mathbf{e}_i = W_E[t_i] \in \mathbb{R}^d \]</p>
+      <p style="margin-top:8px;">where \(d\) is the embedding dimension (e.g., 768 for GPT-2, 4096 for LLaMA-3). Positional encoding \(\mathbf{p}_i\) is added: \(\mathbf{x}_i = \mathbf{e}_i + \mathbf{p}_i\)</p>
+    </div>
+
+    <div class="use-case-banner">
+      <div class="icon">🏭</div>
+      <div>
+        <strong>Industrial Use Case: SCADA Log Semantic Search</strong>
+        <p>Embed 10 years of SCADA alarm logs. At runtime, embed a natural language query like <em>"recurring motor faults on Line 3"</em> and retrieve the top-k semantically similar historical alarms — even if exact keywords don't match. Uses cosine similarity over embedding vectors.</p>
+      </div>
+    </div>
+
+    <!-- Interactive Tokenizer Demo -->
+    <div class="demo-panel">
+      <h3>⚡ Interactive Tokenizer Demo (BPE Simulation)</h3>
+      <input class="demo-input" id="tokenizer-input" type="text"
+             placeholder="Enter industrial text e.g. 'FAULT_JOINT_3 E-STOP TRIGGERED'" value="FAULT_JOINT_3 E-STOP TRIGGERED">
+      <button class="demo-btn" onclick="runTokenizer()">Tokenize</button>
+      <div class="demo-output" id="tokenizer-output"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 2 — TRANSFORMER ARCHITECTURE
+  ═══════════════════════════════════════════ -->
+  <section id="transformers" class="section">
+    <div class="section-header">
+      <div class="section-icon icon-orange">⚙️</div>
+      <div>
+        <h2>Transformer Architecture</h2>
+        <p style="color:var(--muted); font-size:.85rem;">The core engine of every modern LLM</p>
+      </div>
+      <span class="concept-tag">Concept 02</span>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipe-step"><span class="pipe-icon">🔤</span><span class="pipe-label">Input Tokens</span></div>
+      <span class="pipe-arrow">→</span>
+      <div class="pipe-step"><span class="pipe-icon">📐</span><span class="pipe-label">Embeddings + Positional Enc.</span></div>
+      <span class="pipe-arrow">→</span>
+      <div class="pipe-step"><span class="pipe-icon">🔍</span><span class="pipe-label">Multi-Head Attention</span></div>
+      <span class="pipe-arrow">→</span>
+      <div class="pipe-step"><span class="pipe-icon">➕</span><span class="pipe-label">Add &amp; Norm</span></div>
+      <span class="pipe-arrow">→</span>
+      <div class="pipe-step"><span class="pipe-icon">🧮</span><span class="pipe-label">Feed-Forward MLP</span></div>
+      <span class="pipe-arrow">→</span>
+      <div class="pipe-step"><span class="pipe-icon">✖️ N</span><span class="pipe-label">Repeat N Layers</span></div>
+      <span class="pipe-arrow">→</span>
+      <div class="pipe-step"><span class="pipe-icon">📊</span><span class="pipe-label">Output Logits</span></div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3>Multi-Head Attention</h3>
+        <p>Runs \(h\) parallel attention heads, each learning different relationship patterns between tokens — e.g., one head may track joint dependencies, another detects temporal fault sequences.</p>
+      </div>
+      <div class="card">
+        <h3>Add &amp; LayerNorm</h3>
+        <p>Residual connections prevent vanishing gradients in deep networks (96 layers in GPT-4). LayerNorm stabilizes training across variable-length industrial sequences.</p>
+      </div>
+      <div class="card">
+        <h3>Feed-Forward MLP</h3>
+        <p>A 2-layer MLP with GELU activation expands dimensionality 4× then compresses back. This is where factual knowledge (e.g., PLC error codes) is believed to be stored.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span>Python — Minimal Transformer Block (PyTorch)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><code class="language-python">import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class TransformerBlock(nn.Module):
+    """Single Transformer block for industrial sequence modeling."""
+    def __init__(self, d_model=512, n_heads=8, d_ff=2048, dropout=0.1):
+        super().__init__()
+        self.attn    = nn.MultiheadAttention(d_model, n_heads, dropout=dropout, batch_first=True)
+        self.ff      = nn.Sequential(
+            nn.Linear(d_model, d_ff),
+            nn.GELU(),
+            nn.Linear(d_ff, d_model),
+            nn.Dropout(dropout)
+        )
+        self.norm1   = nn.LayerNorm(d_model)
+        self.norm2   = nn.LayerNorm(d_model)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x, mask=None):
+        # Self-Attention + Residual
+        attn_out, _ = self.attn(x, x, x, attn_mask=mask)
+        x = self.norm1(x + self.dropout(attn_out))
+        # Feed-Forward + Residual
+        x = self.norm2(x + self.ff(x))
+        return x
+
+# Example: model robot joint torque sequences (batch=4, seq_len=32, features=512)
+model = TransformerBlock(d_model=512, n_heads=8)
+robot_seq = torch.randn(4, 32, 512)      # 4 robots, 32 timesteps, 512 features
+output    = model(robot_seq)             # Shape: [4, 32, 512]
+print(f"Output shape: {output.shape}")  # torch.Size([4, 32, 512])
+</code></pre>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 3 — SELF-ATTENTION
+  ═══════════════════════════════════════════ -->
+  <section id="attention" class="section">
+    <div class="section-header">
+      <div class="section-icon icon-purple">🔍</div>
+      <div>
+        <h2>Self-Attention Mechanism</h2>
+        <p style="color:var(--muted); font-size:.85rem;">How LLMs relate every token to every other token</p>
+      </div>
+      <span class="concept-tag">Concept 03</span>
+    </div>
+
+    <div class="math-box">
+      <div class="label">Scaled Dot-Product Attention</div>
+      <p>\[ \text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right) V \]</p>
+      <p style="margin-top:10px; color:var(--muted); font-size:.9rem;">
+        <strong style="color:var(--blue)">Q (Query)</strong> — "What am I looking for?" (current sensor reading)<br>
+        <strong style="color:var(--green)">K (Key)</strong> — "What do I offer?" (historical timestep label)<br>
+        <strong style="color:var(--orange)">V (Value)</strong> — "What information do I carry?" (actual sensor value)
+      </p>
+    </div>
+
+    <!-- Interactive Attention Heatmap -->
+    <div class="demo-panel">
+      <h3>🔥 Live Attention Heatmap — Robot Fault Sequence</h3>
+      <p style="color:var(--muted); font-size:.9rem; margin-bottom:14px;">
+        Simulated attention weights for a cobot fault detection sequence. Brighter = stronger attention.
+      </p>
+      <button class="demo-btn" onclick="renderAttentionMap()">Generate Attention Map</button>
+      <div id="attention-matrix" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="use-case-banner">
+      <div class="icon">🦾</div>
+      <div>
+        <strong>Industrial Use Case: Collaborative Robot Fault Prediction</strong>
+        <p>In a time-series of 32 sensor readings (torque, vibration, temperature), self-attention allows the model to directly correlate a temperature spike at timestep 5 with an encoder error at timestep 28 — regardless of the distance between them. Traditional RNNs forget long-range dependencies; transformers never do.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 4 — PRETRAINING
+  ═══════════════════════════════════════════ -->
+  <section id="pretraining" class="section">
+    <div class="section-header">
+      <div class="section-icon icon-green">🧠</div>
+      <div>
+        <h2>Pretraining</h2>
+        <p style="color:var(--muted); font-size:.85rem;">Building world knowledge from massive corpora</p>
+      </div>
+      <span class="concept-tag">Concept 04</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Causal Language Modeling (CLM)</h3>
+        <p>The model predicts the next token given all previous tokens. Trained on trillions of tokens — including technical manuals, ISO standards, and engineering documentation. Loss function:</p>
+        <p style="margin-top:10px; text-align:center;">\[ \mathcal{L} = -\sum_{t=1}^{T} \log P(x_t \mid x_1, \ldots, x_{t-1}) \]</p>
+      </div>
+      <div class="card">
+        <h3>Scale & Parameters</h3>
+        <ul>
+          <li><strong style="color:var(--blue)">GPT-4</strong> — ~1.8 trillion parameters (est.)</li>
+          <li><strong style="color:var(--green)">LLaMA 3.1 405B</strong> — 405B params, open source</li>
+          <li><strong style="color:var(--orange)">Gemini 2.0 Ultra</strong> — multimodal, vision + text</li>
+          <li><strong style="color:var(--purple)">DeepSeek-R1</strong> — reasoning-optimized, 671B MoE</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="use-case-banner">
+      <div class="icon">📋</div>
+      <div>
+        <strong>Industrial Use Case: Zero-Shot PLC Code Understanding</strong>
+        <p>A pretrained LLM has seen Siemens, Allen-Bradley, and Beckhoff documentation during training. Without any fine-tuning, you can ask: <em>"Explain what this Ladder Logic rung does"</em> and receive a correct technical explanation — enabling faster code review during FAT and SAT commissioning.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 5 — FINE-TUNING
+  ═══════════════════════════════════════════ -->
+  <section id="finetuning" class="section">
+    <div class="section-header">
+      <div class="section-icon icon-orange">🎯</div>
+      <div>
+        <h2>Fine-Tuning (LoRA / RLHF)</h2>
+        <p style="color:var(--muted); font-size:.85rem;">Specializing LLMs for industrial domains</p>
+      </div>
+      <span class="concept-tag">Concept 05</span>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3>Full Fine-Tuning</h3>
+        <p>Updates all model weights on domain data (e.g., your company's SCADA logs + maintenance records). Requires significant GPU resources. Best for production safety-critical systems.</p>
+      </div>
+      <div class="card">
+        <h3>LoRA (Low-Rank Adaptation)</h3>
+        <p>Injects trainable rank-decomposition matrices into attention layers. Trains only ~0.1% of parameters. Ideal for fine-tuning on cobot fault datasets with limited GPU budget:</p>
+        <p style="text-align:center; margin-top:8px;">\[ W' = W + \Delta W = W + BA \]</p>
+        <p style="color:var(--muted); font-size:.8rem; text-align:center;">where \(B \in \mathbb{R}^{d \times r},\ A \in \mathbb{R}^{r \times k},\ r \ll d\)</p>
+      </div>
+      <div class="card">
+        <h3>RLHF</h3>
+        <p>Reinforcement Learning from Human Feedback aligns LLM outputs with expert preferences. Used to train models to give safe, conservative responses in safety-critical automation contexts — preventing hallucinated control commands.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span>Python — LoRA Fine-Tuning on Industrial SCADA Data (HuggingFace PEFT)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><code class="language-python">from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments, Trainer
+from peft import LoraConfig, get_peft_model, TaskType
+from datasets import load_dataset
+
+# Load base model
+model_name = "meta-llama/Llama-3.1-8B-Instruct"
+tokenizer  = AutoTokenizer.from_pretrained(model_name)
+model      = AutoModelForCausalLM.from_pretrained(model_name, load_in_4bit=True)
+
+# LoRA configuration for industrial fine-tuning
+lora_config = LoraConfig(
+    task_type    = TaskType.CAUSAL_LM,
+    r            = 16,          # Rank — higher = more capacity
+    lora_alpha   = 32,          # Scaling factor
+    lora_dropout = 0.05,
+    target_modules = ["q_proj", "v_proj"]  # Attention layers only
+)
+model = get_peft_model(model, lora_config)
+model.print_trainable_parameters()
+# Output: trainable params: 8,388,608 || all params: 8,038,572,032 || trainable%: 0.10%
+
+# Load your industrial dataset
+dataset = load_dataset("json", data_files={
+    "train": "data/scada_fault_train.jsonl",
+    "eval":  "data/scada_fault_eval.jsonl"
+})
+# Format: {"prompt": "ALARM: Motor_03 Overcurrent", "completion": "Root cause: ..."}
+
+training_args = TrainingArguments(
+    output_dir          = "./cobot-llm-lora",
+    num_train_epochs    = 3,
+    per_device_train_batch_size = 4,
+    gradient_accumulation_steps = 4,
+    learning_rate       = 2e-4,
+    fp16                = True,
+    logging_steps       = 50,
+    save_steps          = 200,
+    evaluation_strategy = "steps",
+    eval_steps          = 200,
+)
+
+trainer = Trainer(
+    model           = model,
+    args            = training_args,
+    train_dataset   = dataset["train"],
+    eval_dataset    = dataset["eval"],
+)
+trainer.train()
+model.save_pretrained("./cobot-llm-finetuned")
+</code></pre>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 6 — RAG
+  ═══════════════════════════════════════════ -->
+  <section id="rag" class="section">
+    <div class="section-header">
+      <div class="section-icon icon-blue">📚</div>
+      <div>
+        <h2>Retrieval-Augmented Generation (RAG)</h2>
+        <p style="color:var(--muted); font-size:.85rem;">Grounding LLMs in real industrial knowledge</p>
+      </div>
+      <span class="concept-tag">Concept 06</span>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipe-step"><span class="pipe-icon">❓</span><span class="pipe-label">User Query</span></div>
+      <span class="pipe-arrow">→</span>
+      <div class="pipe-step"><span class="pipe-icon">📐</span><span class="pipe-label">Embed Query</span></div>
+      <span class="pipe-arrow">→</span>
+      <div class="pipe-step"><span class="pipe-icon">🗄️</span><span class="pipe-label">Vector DB Search</span></div>
+      <span class="pipe-arrow">→</span>
+      <div class="pipe-step"><span class="pipe-icon">📄</span><span class="pipe-label">Retrieve Top-K Docs</span></div>
+      <span class="pipe-arrow">→</span>
+      <div class="pipe-step"><span class="pipe-icon">🤖</span><span class="pipe-label">LLM + Context</span></div>
+      <span class="pipe-arrow">→</span>
+      <div class="pipe-step"><span class="pipe-icon">✅</span><span class="pipe-label">Grounded Answer</span></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span>Python — RAG for PLC/HMI Maintenance Assistant (LangChain + ChromaDB)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><code class="language-python">from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings  import HuggingFaceEmbeddings
+from langchain_community.document_loaders import DirectoryLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.chains import RetrievalQA
+from langchain_community.llms import Ollama
+
+# 1. Load industrial documentation (PLC manuals, maintenance logs, ISO standards)
+loader   = DirectoryLoader("./industrial_docs/", glob="**/*.pdf")
+docs     = loader.load()
+
+splitter = RecursiveCharacterTextSplitter(chunk_size=512, chunk_overlap=64)
+chunks   = splitter.split_documents(docs)
+
+# 2. Embed and store in vector database
+embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+vectordb   = Chroma.from_documents(chunks, embeddings, persist_directory="./chroma_plc_db")
+
+# 3. Build RAG chain with local LLM (runs on-premises — no cloud data leakage)
+llm = Ollama(model="llama3.1:8b", temperature=0.1)  # Low temp for factual answers
+
+qa_chain = RetrievalQA.from_chain_type(
+    llm       = llm,
+    retriever = vectordb.as_retriever(search_kwargs={"k": 5}),
+    chain_type = "stuff",
+    return_source_documents = True
+)
+
+# 4. Query the system
+result = qa_chain.invoke({
+    "query": "What is the troubleshooting procedure for Allen-Bradley E-Stop fault code F07?"
+})
+print(result["result"])
+print("\nSources:", [d.metadata["source"] for d in result["source_documents"]])
+</code></pre>
+    </div>
+
+    <div class="use-case-banner">
+      <div class="icon">🔧</div>
+      <div>
+        <strong>Industrial Use Case: On-Premises HMI Maintenance Chatbot</strong>
+        <p>Index all Siemens TIA Portal manuals, your plant's SOP documents, and historical maintenance tickets into ChromaDB. Engineers on the shop floor can query in natural language: <em>"Why did Robot Cell 4 trigger safety zone violation at 02:15?"</em> — and get a grounded, source-cited answer from actual documentation without internet access.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 7 — AGENTIC AI
+  ═══════════════════════════════════════════ -->
+  <section id="agentic" class="section">
+    <div class="section-header">
+      <div class="section-icon icon-red">🤖</div>
+      <div>
+        <h2>Agentic AI &amp; Tool Use</h2>
+        <p style="color:var(--muted); font-size:.85rem;">LLMs that plan, act, and control systems autonomously</p>
+      </div>
+      <span class="concept-tag">Concept 07</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>ReAct Pattern (Reason + Act)</h3>
+        <p>The LLM alternates between <strong style="color:var(--blue)">Thought</strong> → <strong style="color:var(--green)">Action</strong> → <strong style="color:var(--orange)">Observation</strong> loops. Applied to robot control:</p>
+        <ul>
+          <li><strong>Thought:</strong> "Joint 3 torque exceeded threshold"</li>
+          <li><strong>Action:</strong> Call <code>read_sensor("joint_3_torque")</code></li>
+          <li><strong>Observation:</strong> "87.3 Nm — 15% above nominal"</li>
+          <li><strong>Action:</strong> Call <code>reduce_speed(axis=3, factor=0.8)</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>ROSGPT Framework</h3>
+        <p>Integrates GPT-4 with ROS2 (Robot Operating System 2), enabling conversion of natural language commands directly into robotic control commands. Example pipeline:</p>
+        <ul>
+          <li>"Move arm to pick position" → ROS2 MoveIt trajectory</li>
+          <li>"Slow down on approach" → velocity controller update</li>
+          <li>"Report joint states" → topic subscriber query</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span>Python — LLM Agent with Industrial Tool Use (LangChain)</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><code class="language-python">from langchain.agents import AgentExecutor, create_react_agent
+from langchain_core.tools import tool
+from langchain_openai import ChatOpenAI
+from langchain import hub
+
+# Define industrial tools the LLM agent can call
+@tool
+def read_plc_tag(tag_name: str) -> str:
+    """Read a real-time value from PLC tag via OPC-UA. Args: tag_name (str)"""
+    # Connect to Kepware OPC-UA server
+    from opcua import Client
+    client = Client("opc.tcp://kepware-server:4840")
+    client.connect()
+    node  = client.get_node(f"ns=2;s=PLC.{tag_name}")
+    value = node.get_value()
+    client.disconnect()
+    return f"{tag_name} = {value}"
+
+@tool
+def trigger_alarm(alarm_id: str, message: str) -> str:
+    """Trigger a SCADA alarm with given ID and message."""
+    # POST to SCADA REST API (e.g., Ignition Gateway)
+    import requests
+    resp = requests.post("http://ignition-gateway/api/alarm",
+                         json={"id": alarm_id, "message": message, "priority": "High"})
+    return f"Alarm {alarm_id} triggered: {resp.status_code}"
+
+@tool
+def get_robot_joint_state(robot_id: str) -> str:
+    """Get current joint positions and velocities of a collaborative robot."""
+    import requests
+    resp = requests.get(f"http://robot-api/v1/robots/{robot_id}/joints")
+    return resp.json()
+
+# Build the LLM agent
+llm   = ChatOpenAI(model="gpt-4o", temperature=0)
+tools = [read_plc_tag, trigger_alarm, get_robot_joint_state]
+agent = create_react_agent(llm, tools, hub.pull("hwchase17/react"))
+
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, max_iterations=6)
+
+# Run autonomous industrial task
+result = agent_executor.invoke({
+    "input": "Check if Robot_01 joint 3 torque is safe. If over 80 Nm, trigger alarm FAULT_J3 and log the current state."
+})
+print(result["output"])
+</code></pre>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 8 — INDUSTRIAL APPLICATIONS
+  ═══════════════════════════════════════════ -->
+  <section id="industrial-apps" class="section">
+    <div class="section-header">
+      <div class="section-icon icon-green">🏭</div>
+      <div>
+        <h2>Industrial Applications Matrix</h2>
+        <p style="color:var(--muted); font-size:.85rem;">LLM concepts mapped to real automation systems</p>
+      </div>
+      <span class="concept-tag">Concept 08</span>
+    </div>
+
+    <div id="apps-chart" style="height:420px;"></div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 9 — DEPLOYMENT
+  ═══════════════════════════════════════════ -->
+  <section id="deployment" class="section">
+    <div class="section-header">
+      <div class="section-icon icon-orange">🚀</div>
+      <div>
+        <h2>Industrial LLM Deployment</h2>
+        <p style="color:var(--muted); font-size:.85rem;">On-premises vs cloud vs edge strategies</p>
+      </div>
+      <span class="concept-tag">Concept 09</span>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3>☁️ Cloud (Google Vertex AI)</h3>
+        <p>Best for: non-real-time analytics, SCADA report generation, maintenance scheduling.</p>
+        <ul>
+          <li>Gemini 2.0 Flash via API</li>
+          <li>Vertex AI Pipelines for batch inference</li>
+          <li>Latency: 500ms–2s</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🏢 On-Premises</h3>
+        <p>Best for: safety-critical systems, data sovereignty, air-gapped plants.</p>
+        <ul>
+          <li>Ollama + LLaMA 3.1 8B / 70B</li>
+          <li>vLLM inference server</li>
+          <li>Latency: 100–500ms (GPU)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🔲 Edge (Cobot / PLC)</h3>
+        <p>Best for: real-time control decisions, offline environments, robot-side inference.</p>
+        <ul>
+          <li>Phi-3 Mini / Gemma 2B quantized</li>
+          <li>ONNX Runtime on NVIDIA Jetson</li>
+          <li>Latency: &lt;50ms</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Built by <a href="index.html">Nay Linn Aung</a> — Senior Software &amp; Control Engineer | Frederick, Maryland</p>
+    <p style="margin-top:8px;">LLM in Robotics Market: $6.1B (2026) → $24.29B (2030) at 41.3% CAGR</p>
+  </footer>
+
+</main>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════ -->
+<script>
+// ── Syntax Highlighting ──────────────────────
+hljs.highlightAll();
+
+// ── Copy Code ───────────────────────────────
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+// ── Active Sidebar Link on Scroll ───────────
+const sections = document.querySelectorAll('section[id]');
+const navLinks  = document.querySelectorAll('nav.sidebar a[href^="#"]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(sec => {
+    if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+
+// ── Tokenizer Demo ──────────────────────────
+function runTokenizer() {
+  const input  = document.getElementById('tokenizer-input').value;
+  const output = document.getElementById('tokenizer-output');
+
+  // Simulate BPE tokenization for industrial text
+  const rules = [
+    [/FAULT/g,'<span style="background:#3d1a1a;color:#f85149;padding:2px 6px;border-radius:4px;margin:2px;">FAULT</span>'],
+    [/E-STOP/g,'<span style="background:#3d2a1a;color:#d29922;padding:2px 6px;border-radius:4px;margin:2px;">E-STOP</span>'],
+    [/TRIGGERED/g,'<span style="background:#1a2d3d;color:#58a6ff;padding:2px 6px;border-radius:4px;margin:2px;">TRIG</span><span style="background:#1a2d3d;color:#58a6ff;padding:2px 6px;border-radius:4px;margin:2px;">GERED</span>'],
+    [/JOINT_(\d+)/g,'<span style="background:#1a3d1a;color:#3fb950;padding:2px 6px;border-radius:4px;margin:2px;">_JOINT</span><span style="background:#1a3d1a;color:#3fb950;padding:2px 6px;border-radius:4px;margin:2px;">_$1</span>'],
+    [/(\w+)/g,'<span style="background:#1a1f2e;color:#8b949e;padding:2px 6px;border-radius:4px;margin:2px;">$1</span>'],
+  ];
+
+  let html = input;
+  // Simple split-based tokenization
+  const tokens = input.split(/(\s+|_|-|(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])|\d+)/)
+                       .filter(t => t && t.trim());
+  const colors = ['#f85149','#3fb950','#58a6ff','#d29922','#bc8cff','#79c0ff','#ffa657'];
+  const tokenHTML = tokens.map((t, i) =>
+    `<span style="background:#1a1f2e;color:${colors[i%colors.length]};padding:3px 8px;border-radius:4px;margin:3px;display:inline-block;font-family:monospace">${t}</span>`
+  ).join('');
+
+  output.style.display = 'block';
+  output.innerHTML = `
+    <div style="margin-bottom:10px;color:var(--muted);font-size:.85rem;">
+      Token count: <strong style="color:var(--blue)">${tokens.length}</strong>
+    </div>
+    <div>${tokenHTML}</div>
+    <div style="margin-top:12px;color:var(--muted);font-size:.8rem;">
+      ℹ️ Each colored block = 1 token. Industrial text often tokenizes inefficiently — domain-specific tokenizers (trained on SCADA/PLC data) reduce token count by 30–40%.
+    </div>`;
+}
+
+// ── Attention Heatmap ───────────────────────
+function renderAttentionMap() {
+  const tokens = ['joint_torque','vibration','motor_temp','cycle_time','tcp_force','encoder_err',
+                  'timestamp','robot_id','alarm_code','fault_prob'];
+
+  // Simulate attention weights with a fault pattern
+  const z = tokens.map((_, i) => tokens.map((__, j) => {
+    const base = Math.random() * 0.3;
+    if (i === 2 && j === 5) return 0.95;  // motor_temp → encoder_err: strong link
+    if (i === 0 && j === 4) return 0.88;  // torque → tcp_force
+    if (i === 8 && j === 9) return 0.92;  // alarm_code → fault_prob
+    if (Math.abs(i-j) <= 1) return 0.5 + Math.random() * 0.3;
+    return base;
+  }));
+
+  Plotly.newPlot('attention-matrix', [{
+    type: 'heatmap', z, x: tokens, y: tokens,
+    colorscale: [[0,'#0d1117'],[0.3,'#1a3d5c'],[0.6,'#1f6ca0'],[0.85,'#3fb950'],[1,'#f85149']],
+    showscale: true,
+    hoverongaps: false,
+  }], {
+    paper_bgcolor: '#161b22', plot_bgcolor: '#161b22',
+    font: { color: '#8b949e', size: 11 },
+    xaxis: { tickangle: -35 },
+    margin: { l: 110, r: 40, t: 20, b: 100 },
+    title: { text: 'Attention Weights — Cobot Fault Detection Sequence', font: { color: '#e6edf3', size: 13 } }
+  }, { responsive: true });
+}
+
+// ── Industrial Apps Bubble Chart ────────────
+window.addEventListener('load', () => {
+  renderAttentionMap();
+
+  const apps = [
+    { name: 'SCADA Semantic Search',    domain: 'SCADA',    readiness: 95, impact: 90, size: 40 },
+    { name: 'PLC Code Review',          domain: 'PLC',      readiness: 85, impact: 80, size: 35 },
+    { name: 'Cobot Fault Prediction',   domain: 'Robotics', readiness: 75, impact: 95, size: 45 },
+    { name: 'HMI Maintenance Chatbot',  domain: 'HMI',      readiness: 90, impact: 85, size: 38 },
+    { name: 'IIoT Anomaly Detection',   domain: 'IIoT',     readiness: 70, impact: 88, size: 42 },
+    { name: 'NL → ROS2 Commands',       domain: 'Robotics', readiness: 60, impact: 98, size: 50 },
+    { name: 'Safety System Analysis',   domain: 'Safety',   readiness: 65, impact: 99, size: 48 },
+    { name: 'Predictive Maintenance',   domain: 'IIoT',     readiness: 88, impact: 92, size: 44 },
+    { name: 'FAT/SAT Documentation',    domain: 'Process',  readiness: 92, impact: 70, size: 30 },
+    { name: 'Autonomous Task Planning', domain: 'Robotics', readiness: 55, impact: 97, size: 52 },
+  ];
+
+  const colorMap = { SCADA:'#58a6ff', PLC:'#3fb950', Robotics:'#f85149', HMI:'#d29922',
+                     IIoT:'#bc8cff', Safety:'#ff7b72', Process:'#79c0ff' };
+
+  Plotly.newPlot('apps-chart', [{
+    type: 'scatter', mode: 'markers+text',
+    x: apps.map(a => a.readiness),
+    y: apps.map(a => a.impact),
+    text: apps.map(a => a.name),
+    textposition: 'top center',
+    textfont: { color: '#8b949e', size: 10 },
+    marker: {
+      size: apps.map(a => a.size),
+      color: apps.map(a => colorMap[a.domain] || '#58a6ff'),
+      opacity: 0.8,
+      line: { color: '#30363d', width: 1 }
+    },
+    hovertemplate: '<b>%{text}</b><br>Readiness: %{x}%<br>Impact: %{y}%<extra></extra>'
+  }], {
+    paper_bgcolor: '#161b22', plot_bgcolor: '#0d1117',
+    font: { color: '#e6edf3' },
+    xaxis: { title: 'Technology Readiness (%)', gridcolor: '#21262d', range: [40, 100] },
+    yaxis: { title: 'Business Impact (%)',       gridcolor: '#21262d', range: [60, 102] },
+    margin: { l: 60, r: 30, t: 20, b: 60 }
+  }, { responsive: true });
+});
+</script>
+
+</body>
+</html>

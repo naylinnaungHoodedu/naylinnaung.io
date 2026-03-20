@@ -41,3 +41,6 @@ handlers:
 - url: /(.*)
   static_files: \1.html
   upload: .*\.html
+
+error_handlers:
+  - file: 404.html

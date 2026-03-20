@@ -370,6 +370,25 @@ h3 {
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    :root {
+        --sidebar-width: 220px;
+    }
+    
+    .content-container {
+        padding: 60px 8%;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(50%, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
     body {
         flex-direction: column;

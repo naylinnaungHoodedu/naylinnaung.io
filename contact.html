@@ -26,6 +26,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script defer data-domain="naylinnaung.io" src="https://plausible.io/js/script.js"></script>
 </head>
 
 <body>
@@ -45,8 +46,14 @@
             <ul class="nav-links">
                 <li><a href="experience.html">Experience</a></li>
                 <li><a href="projects.html">Projects</a></li>
+                                <li><a href="skills.html">Skills & Certs</a></li>
+            </ul>
+
+            
+            <span class="section-label" style="margin-top: 2rem;">Showcase</span>
+            <ul class="nav-links">
                 <li><a href="xai.html">Explainable AI</a></li>
-                <li><a href="skills.html">Skills & Certs</a></li>
+                <li><a href="llm-concepts.html">LLM Concepts</a></li>
             </ul>
 
             <span class="section-label" style="margin-top: 2rem;">Info</span>
@@ -86,10 +93,23 @@
                 <p><i class="fab fa-linkedin" aria-hidden="true"></i> <strong>LinkedIn:</strong> <a
                         href="https://linkedin.com/in/naylinnaung" target="_blank"
                         rel="noopener noreferrer">linkedin.com/in/naylinnaung</a></p>
+                <p><i class="fas fa-calendar-alt" aria-hidden="true"></i> <strong>Schedule a Call:</strong> <a
+                        href="https://calendly.com/naylinnaung" target="_blank"
+                        rel="noopener noreferrer">calendly.com/naylinnaung</a></p>
+            </div>
+
+            <!-- Dual CTA Strategy -->
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; margin-bottom: 1rem;">
+                <a href="assets/docs/Nay_Linn_Aung_Resume.pdf" target="_blank" class="btn-submit" style="text-decoration: none; flex: 1; text-align: center;">
+                    <i class="fas fa-file-pdf" aria-hidden="true"></i> Hire Me (Full-Time)
+                </a>
+                <a href="#contact-form" class="btn-submit" style="text-decoration: none; flex: 1; text-align: center; background: linear-gradient(135deg, var(--secondary-color), #7928CA);">
+                    <i class="fas fa-comments" aria-hidden="true"></i> Consulting Inquiry
+                </a>
             </div>
 
             <!-- Contact Form -->
-            <div class="card" style="margin-top: 2.5rem;">
+            <div class="card" id="contact-form" style="margin-top: 2rem;">
                 <form action="https://formspree.io/f/mqkenowq" method="POST">
                     <div class="form-group">
                         <label for="name">Name</label>

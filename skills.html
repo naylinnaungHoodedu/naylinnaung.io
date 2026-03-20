@@ -25,6 +25,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script defer data-domain="naylinnaung.io" src="https://plausible.io/js/script.js"></script>
 </head>
 
 <body>
@@ -42,8 +43,14 @@
             <ul class="nav-links">
                 <li><a href="experience.html">Experience</a></li>
                 <li><a href="projects.html">Projects</a></li>
+                                <li><a href="skills.html" class="active">Skills & Certs</a></li>
+            </ul>
+
+            
+            <span class="section-label" style="margin-top: 2rem;">Showcase</span>
+            <ul class="nav-links">
                 <li><a href="xai.html">Explainable AI</a></li>
-                <li><a href="skills.html" class="active">Skills & Certs</a></li>
+                <li><a href="llm-concepts.html">LLM Concepts</a></li>
             </ul>
 
             <span class="section-label" style="margin-top: 2rem;">Info</span>
@@ -84,12 +91,25 @@
                         </ul>
                     </div>
                     <div>
-                        <h4 style="margin-bottom:10px;">Robotics & Vision</h4>
+                        <h4 style="margin-bottom:10px;">Robotics &amp; Vision</h4>
                         <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.95rem;">
-                            <li>Universal Robots (UR), MiR AMR</li>
-                            <li>Multi-Robot Coordination, Pick-and-Place</li>
+                            <li>Universal Robots (UR3/UR5/UR10/UR16e), MiR AMR</li>
+                            <li>FANUC (LR Mate 200iD, R-30iB Mate Plus), ABB (GoFa 10/12, IRB series)</li>
+                            <li>Hirata (AR-V1000H30, AR-F650HCs), IAI (SCARA, Cartesian)</li>
+                            <li>Multi-Robot Coordination, Pick-and-Place, Spot Welding</li>
                             <li>Keyence, Omron, OpenCV, Vision-Guided Robotics</li>
                         </ul>
+                        <!-- Robot Visual Placeholders -->
+                        <div style="margin-top: 1.5rem; display: flex; gap: 10px;">
+                            <div style="flex: 1; height: 100px; background: #1a1a2e; border: 1px dashed var(--border); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted);">
+                                <i class="fas fa-robot" style="font-size: 1.5rem; margin-bottom: 5px; color: var(--primary-color);"></i>
+                                <span style="font-size: 0.75rem;">FANUC LR Mate</span>
+                            </div>
+                            <div style="flex: 1; height: 100px; background: #1a1a2e; border: 1px dashed var(--border); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted);">
+                                <i class="fas fa-microchip" style="font-size: 1.5rem; margin-bottom: 5px; color: var(--secondary-color);"></i>
+                                <span style="font-size: 0.75rem;">R-30iB Controller</span>
+                            </div>
+                        </div>
                     </div>
                     <div>
                         <h4 style="margin-bottom:10px;">SCADA & Networks</h4>
@@ -103,6 +123,37 @@
                         <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.95rem;">
                             <li>Python (OOP), C/C++, C#, MATLAB</li>
                             <li>PyTorch, TensorFlow, OpenCV, ONNX Runtime</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Domain &amp; Compliance Expertise</h3>
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                    <div>
+                        <h4 style="margin-bottom:10px;">Semiconductor &amp; Cleanroom</h4>
+                        <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.95rem;">
+                            <li>Wafer handling automation, EFEM, FOUP</li>
+                            <li>ISO 14644 cleanroom standards</li>
+                            <li>ESD-safe robotic handling</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom:10px;">Pharma &amp; GMP Standards</h4>
+                        <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.95rem;">
+                            <li>IQ/OQ/PQ validation protocols</li>
+                            <li>GMP, GAMP 5, 21 CFR Part 11 compliance</li>
+                            <li>CAPA, deviation handling, batch record automation</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom:10px;">Energy &amp; Critical Infrastructure</h4>
+                        <ul style="padding-left: 20px; line-height: 1.6; font-size: 0.95rem;">
+                            <li>National SCADA grid monitoring</li>
+                            <li>IEC 62443 cybersecurity for OT</li>
+                            <li>Functional safety (SIL, ISO 13849)</li>
                         </ul>
                     </div>
                 </div>
